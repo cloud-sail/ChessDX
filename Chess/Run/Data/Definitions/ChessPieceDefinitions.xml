@@ -1,0 +1,8 @@
+<Definitions>
+	<ChessPieceDefinition name="King"	whiteModel="Data/Models/TutorialBox.xml" blackModel="Data/Models/Woman.xml"/>
+	<ChessPieceDefinition name="Queen"	whiteModel="" blackModel=""/>
+	<ChessPieceDefinition name="Rook"	whiteModel="" blackModel=""/>
+	<ChessPieceDefinition name="Bishop" whiteModel="" blackModel=""/>
+	<ChessPieceDefinition name="Knight" whiteModel="" blackModel=""/>
+	<ChessPieceDefinition name="Pawn"	whiteModel="" blackModel=""/>
+</Definitions>
