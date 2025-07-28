@@ -1,0 +1,13 @@
+<StaticModelInfo
+	objFile = "Data/Models/ChessPieces/bishop.obj"
+	shader = "Data/Shaders/Diffuse"
+	diffuseMap = "Data/Images/Textures/Bricks_d.png"
+	normalMap = "Data/Images/Textures/Bricks_n.png"
+	specGlossEmitMap = "Data/Images/Textures/Bricks_sge.png"
+	unitsPerMeter = "8"
+	x="forward"
+	y="up"
+	z="right"
+	frontCounterClockwise="true"
+	translation="0,0,0"
+/>

@@ -1,0 +1,9 @@
+<Definitions>
+	<ChessPieceDefinition name="Pawn"	whiteModel="Data/Models/PawnWhite.xml" blackModel="Data/Models/PawnBlack.xml"/>
+	<ChessPieceDefinition name="King"	whiteModel="Data/Models/KingWhite.xml" blackModel="Data/Models/KingBlack.xml"/>
+	<ChessPieceDefinition name="Queen"	whiteModel="Data/Models/QueenWhite.xml" blackModel="Data/Models/QueenBlack.xml"/>
+	<!--<ChessPieceDefinition name="Queen"	whiteModel="Data/Models/Woman.xml" blackModel="Data/Models/Woman.xml"/>-->
+	<ChessPieceDefinition name="Rook"	whiteModel="Data/Models/RookWhite.xml" blackModel="Data/Models/RookBlack.xml"/>
+	<ChessPieceDefinition name="Bishop" whiteModel="Data/Models/BishopWhite.xml" blackModel="Data/Models/BishopBlack.xml"/>
+	<ChessPieceDefinition name="Knight" whiteModel="Data/Models/KnightWhite.xml" blackModel="Data/Models/KnightBlack.xml"/>
+</Definitions>

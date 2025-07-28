@@ -1,0 +1,12 @@
+<StaticModelInfo
+	objFile = "Data/Models/TutorialBox_Phong/Tutorial_Box.obj"
+	shader = "Data/Shaders/Diffuse"
+	diffuseMap = "Data/Models/TutorialBox_Phong/Tutorial_Box_Diffuse.tga"
+	normalMap = "Data/Models/TutorialBox_Phong/Tutorial_Box_Normal.tga"
+	specGlossEmitMap = "Data/Models/TutorialBox_Phong/Tutorial_Box_SpecGlossEmit.tga"
+	unitsPerMeter = "100"
+	x="left"
+	y="up"
+	z="forward"
+	frontCounterClockwise="true"
+/>

@@ -1,0 +1,13 @@
+<StaticModelInfo
+	objFile = "Data/Models/ChessPieces/pawn.obj"
+	shader = "Data/Shaders/Diffuse"
+	diffuseMap = "Data/Images/Textures/Cobblestone_Diffuse.png"
+	normalMap = "Data/Images/Textures/Cobblestone_Normal.png"
+	specGlossEmitMap = "Data/Images/Textures/Cobblestone_SpecGlossEmit.png"
+	unitsPerMeter = "8"
+	x="forward"
+	y="up"
+	z="right"
+	frontCounterClockwise="true"
+	translation="0,0,0"
+/>
