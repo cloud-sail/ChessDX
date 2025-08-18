@@ -122,14 +122,22 @@ void ChessMatch::Render() const
 		std::vector<Vertex_PCU> verts;
 		AddVertsForAABB3D(verts, currentImpactBox, Rgba8::RED);
 		g_theRenderer->SetModelConstants();
-		g_theRenderer->BindShader(nullptr);
-		g_theRenderer->BindTexture(nullptr);
 
+		UnlitRenderResources resources;
+		resources.diffuseTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(nullptr, DefaultTexture::WhiteOpaque2D);
+		resources.diffuseSamplerIndex = g_theRenderer->GetDefaultSamplerIndex(SamplerMode::POINT_CLAMP);
+		resources.cameraConstantsIndex = g_theRenderer->GetCurrentCameraConstantsIndex();
+		resources.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+
+		g_theRenderer->SetGraphicsBindlessResources(sizeof(UnlitRenderResources), &resources);
+
+		//g_theRenderer->BindTexture(nullptr);
+
+		g_theRenderer->BindShader(nullptr);
 		g_theRenderer->SetBlendMode(BlendMode::OPAQUE);
 		g_theRenderer->SetRasterizerMode(RasterizerMode::WIREFRAME_CULL_BACK);
 		g_theRenderer->SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
-
-
+		g_theRenderer->SetRenderTargetFormats();
 
 		g_theRenderer->DrawVertexArray(verts);
 	}

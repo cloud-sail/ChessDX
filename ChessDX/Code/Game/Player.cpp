@@ -53,12 +53,24 @@ void Player::RenderScreen() const
 		std::vector<Vertex_PCU> reticleVerts;
 		AddVertsForAABB2D(reticleVerts, reticleBounds, Rgba8::OPAQUE_WHITE);
 
-		g_theRenderer->BindTexture(m_reticleTexture);
+		UnlitRenderResources resources;
+		resources.diffuseTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(m_reticleTexture);
+		resources.diffuseSamplerIndex = g_theRenderer->GetDefaultSamplerIndex(SamplerMode::POINT_CLAMP);
+		resources.cameraConstantsIndex = g_theRenderer->GetCurrentCameraConstantsIndex();
+		resources.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+		
+
+		g_theRenderer->SetGraphicsBindlessResources(sizeof(UnlitRenderResources), &resources);
+
+		//g_theRenderer->BindTexture(m_reticleTexture);
+		//g_theRenderer->SetSamplerMode(SamplerMode::POINT_CLAMP);
+
 		g_theRenderer->BindShader(nullptr);
 		g_theRenderer->SetBlendMode(BlendMode::OPAQUE);
-		g_theRenderer->SetSamplerMode(SamplerMode::POINT_CLAMP);
 		g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
 		g_theRenderer->SetDepthMode(DepthMode::DISABLED);
+		g_theRenderer->SetRenderTargetFormats();
+
 		g_theRenderer->DrawVertexArray(reticleVerts);
 	}
 }

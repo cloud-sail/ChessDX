@@ -54,21 +54,38 @@ void ChessPiece::Render(GameObjectRenderConfig const& config /*= GameObjectRende
 
 
 	g_theRenderer->SetModelConstants(GetModelToWorldTransform(), color);
-	g_theRenderer->BindShader(g_theGame->m_diffuseShader);
-	g_theRenderer->BindTexture(m_diffuseTexture, 0);
-	g_theRenderer->BindTexture(m_normalTexture, 1);
-	g_theRenderer->BindTexture(m_sgeTexture, 2);
-	g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
-	g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 1);
-	g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 2);
+
+	BlinnPhongRenderResources blinnPhongRes;
+	blinnPhongRes.diffuseTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(m_diffuseTexture, DefaultTexture::WhiteOpaque2D);
+	blinnPhongRes.normalTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(m_normalTexture, DefaultTexture::DefaultNormalMap);
+	blinnPhongRes.specGlossEmitTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(m_sgeTexture, DefaultTexture::DefaultSpecGlossEmitMap);
+
+	blinnPhongRes.engineConstantsIndex = g_theRenderer->GetCurrentEngineConstantsIndex();
+	blinnPhongRes.cameraConstantsIndex = g_theRenderer->GetCurrentCameraConstantsIndex();
+	blinnPhongRes.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+	blinnPhongRes.lightConstantsIndex = g_theRenderer->GetCurrentLightConstantsIndex();
+
+	g_theRenderer->SetGraphicsBindlessResources(sizeof(BlinnPhongRenderResources), &blinnPhongRes);
+	//g_theRenderer->BindTexture(m_diffuseTexture, 0);
+	//g_theRenderer->BindTexture(m_normalTexture, 1);
+	//g_theRenderer->BindTexture(m_sgeTexture, 2);
+	//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
+	//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 1);
+	//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 2);
+	g_theRenderer->BindShader(g_theGame->m_blinnPhongShader);
 	g_theRenderer->SetBlendMode(BlendMode::OPAQUE);
 	g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
 	g_theRenderer->SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
-
+	g_theRenderer->SetRenderTargetFormats();
 	g_theRenderer->DrawIndexedVertexBuffer(m_vertexBuffer, m_indexBuffer, m_indexBuffer->GetCount());
 
 	if (g_isDebugDraw)
 	{
+		UnlitRenderResources resources;
+		resources.cameraConstantsIndex = g_theRenderer->GetCurrentCameraConstantsIndex();
+		resources.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+		g_theRenderer->SetGraphicsBindlessResources(sizeof(UnlitRenderResources), &resources);
+
 		g_theRenderer->BindShader(g_theGame->m_tbnShader);
 		g_theRenderer->DrawIndexedVertexBuffer(m_vertexBuffer, m_indexBuffer, m_indexBuffer->GetCount());
 	}
@@ -80,16 +97,20 @@ void ChessPiece::Render(GameObjectRenderConfig const& config /*= GameObjectRende
 		result.SetTranslation3D(config.m_ghostPosition);
 
 		g_theRenderer->SetModelConstants(result, Rgba8(255, 255, 255, 128));
-		g_theRenderer->BindShader(g_theGame->m_diffuseShader);
-		g_theRenderer->BindTexture(m_diffuseTexture, 0);
-		g_theRenderer->BindTexture(m_normalTexture, 1);
-		g_theRenderer->BindTexture(m_sgeTexture, 2);
-		g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
-		g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 1);
-		g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 2);
+
+		blinnPhongRes.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+		g_theRenderer->SetGraphicsBindlessResources(sizeof(BlinnPhongRenderResources), &blinnPhongRes);
+		//g_theRenderer->BindTexture(m_diffuseTexture, 0);
+		//g_theRenderer->BindTexture(m_normalTexture, 1);
+		//g_theRenderer->BindTexture(m_sgeTexture, 2);
+		//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
+		//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 1);
+		//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 2);
+		g_theRenderer->BindShader(g_theGame->m_blinnPhongShader);
 		g_theRenderer->SetBlendMode(BlendMode::ALPHA);
 		g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_BACK);
 		g_theRenderer->SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
+		g_theRenderer->SetRenderTargetFormats();
 
 		g_theRenderer->DrawIndexedVertexBuffer(m_vertexBuffer, m_indexBuffer, m_indexBuffer->GetCount());
 	}

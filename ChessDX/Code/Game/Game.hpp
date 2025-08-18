@@ -27,7 +27,7 @@ public:
 	Player* GetPlayerController() const;
 
 public:
-	Shader* m_diffuseShader = nullptr;
+	Shader* m_blinnPhongShader = nullptr;
 	Texture* m_testTexture = nullptr;
 	Shader* m_tbnShader = nullptr;
 

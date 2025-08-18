@@ -1,3 +1,7 @@
+#include "Common/Utils.hlsli"
+#include "Common/ShaderConstants.hlsli"
+#include "Common/Resources.hlsli"
+
 //------------------------------------------------------------------------------------------------
 struct vs_input_t
 {
@@ -17,57 +21,33 @@ struct v2g_t
     float3 worldNormal  : WORLD_NORMAL;
 };
 
-//------------------------------------------------------------------------------------------------
-cbuffer CameraConstants : register(b2)
-{
-	float4x4 	c_worldToCameraTransform;	// View transform
-	float4x4 	c_cameraToRenderTransform;	// Non-standard transform from game to DirectX conventions
-	float4x4 	c_renderToClipTransform;		// Projection transform
-	float3	 	c_cameraWorldPosition;       // Camera World Position
-	float		padding_20;
-};
-
-//------------------------------------------------------------------------------------------------
-cbuffer ModelConstants : register(b3)
-{
-	float4x4 	c_modelToWorldTransform;		// Model transform
-	float4 		c_modelColor;
-};
-
 struct GS_LINE_OUTPUT
 {
     float4 pos : SV_Position;
     float4 color : COLOR;
 };
 
-
+ConstantBuffer<UnlitRenderResources> renderResources : register(b0);
 //------------------------------------------------------------------------------------------------
 v2g_t VertexMain(vs_input_t input)
 {
-	// float4 modelPosition = float4(input.modelPosition, 1);
-	// float4 worldPosition = mul(c_modelToWorldTransform, modelPosition);
-	// float4 cameraPosition = mul(c_worldToCameraTransform, worldPosition);
-	// float4 renderPosition = mul(c_cameraToRenderTransform, cameraPosition);
-	// float4 clipPosition = mul(c_renderToClipTransform, renderPosition);
-
-	// float4 worldTangent = mul(c_modelToWorldTransform, float4(input.modelTangent, 0.0f));
-	// float4 worldBitangent = mul(c_modelToWorldTransform, float4(input.modelBitangent, 0.0f));
-	// float4 worldNormal = mul(c_modelToWorldTransform, float4(input.modelNormal, 0.0f));
+    ConstantBuffer<ModelConstants> modelConstants = ResourceDescriptorHeap[renderResources.modelConstantsIndex];
 
 	v2g_t output;
     float4 modelPosition = float4(input.modelPosition, 1);
-    output.worldPos = mul(c_modelToWorldTransform, modelPosition).xyz;
+    output.worldPos = mul(modelConstants.modelToWorldTransform, modelPosition).xyz;
 
-    output.worldTangent   = mul(c_modelToWorldTransform, float4(input.modelTangent, 0.0f)).xyz;
-    output.worldBitangent = mul(c_modelToWorldTransform, float4(input.modelBitangent, 0.0f)).xyz;
-    output.worldNormal    = mul(c_modelToWorldTransform, float4(input.modelNormal, 0.0f)).xyz;
+    output.worldTangent   = mul(modelConstants.modelToWorldTransform, float4(input.modelTangent, 0.0f)).xyz;
+    output.worldBitangent = mul(modelConstants.modelToWorldTransform, float4(input.modelBitangent, 0.0f)).xyz;
+    output.worldNormal    = mul(modelConstants.modelToWorldTransform, float4(input.modelNormal, 0.0f)).xyz;
 	return output;
 }
-
+ 
 [maxvertexcount(18)]
 void GeometryMain(triangle v2g_t input[3], inout LineStream<GS_LINE_OUTPUT> OutputStream)
 {
-    float4x4 worldToClip = mul(c_renderToClipTransform, mul(c_cameraToRenderTransform, c_worldToCameraTransform));
+    ConstantBuffer<CameraConstants> cameraConstants = ResourceDescriptorHeap[renderResources.cameraConstantsIndex];
+    float4x4 worldToClip = mul(cameraConstants.renderToClipTransform, mul(cameraConstants.cameraToRenderTransform, cameraConstants.worldToCameraTransform));
 
     float lineLength = 0.01f;
 

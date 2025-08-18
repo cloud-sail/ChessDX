@@ -17,8 +17,7 @@
 #include "Engine/Math/AABB3.hpp"
 #include "Engine/Math/Plane3.hpp"
 #include "Engine/Renderer/SpriteSheet.hpp"
-#include "Engine/Renderer/VertexBuffer.hpp"
-#include "Engine/Renderer/IndexBuffer.hpp"
+
 #include "Engine/Window/Window.hpp"
 #include "Engine/Network/NetworkSystem.hpp"
 
@@ -40,7 +39,7 @@ Game::Game()
 	m_playerController = new Player();
 	ChessPieceDefinition::InitializeDefinitions();
 	
-	m_diffuseShader = g_theRenderer->CreateOrGetShader(ShaderConfig("Data/Shaders/Diffuse"), VertexType::VERTEX_PCUTBN);
+	m_blinnPhongShader = g_theRenderer->CreateOrGetShader(ShaderConfig("Data/Shaders/BlinnPhong"), VertexType::VERTEX_PCUTBN);
 
 
 	m_testTexture = g_theRenderer->CreateOrGetTextureFromFile("Data/Images/Test_StbiFlippedAndOpenGL.png");
@@ -160,12 +159,24 @@ void Game::RenderSkybox() const
 	AddVertsForAABB3D(verts, AABB3(Vec3(-1.f, -1.f, -1.f), Vec3(1.f, 1.f, 1.f)));
 
 	g_theRenderer->SetModelConstants();
+
+
+	SkyboxRenderResources resources;
+	resources.cubeMapTextureIndex = g_theRenderer->GetSrvIndexFromLoadedTexture(m_skyTexture);
+	resources.cameraConstantsIndex = g_theRenderer->GetCurrentCameraConstantsIndex();
+	resources.modelConstantsIndex = g_theRenderer->GetCurrentModelConstantsIndex();
+
+	g_theRenderer->SetGraphicsBindlessResources(sizeof(SkyboxRenderResources), &resources);
+
+	//g_theRenderer->BindTexture(m_skyTexture, 9);
+	//g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
+
+
 	g_theRenderer->BindShader(m_skyShader);
-	g_theRenderer->BindTexture(m_skyTexture, 9);
-	g_theRenderer->SetSamplerMode(SamplerMode::BILINEAR_WRAP, 0);
 	g_theRenderer->SetBlendMode(BlendMode::OPAQUE);
 	g_theRenderer->SetRasterizerMode(RasterizerMode::SOLID_CULL_NONE);
 	g_theRenderer->SetDepthMode(DepthMode::READ_WRITE_LESS_EQUAL);
+	g_theRenderer->SetRenderTargetFormats();
 	g_theRenderer->DrawVertexArray(verts);
 }
 

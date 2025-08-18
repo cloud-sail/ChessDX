@@ -1,4 +1,8 @@
+#include "Common/Utils.hlsli"
+#include "Common/ShaderConstants.hlsli"
+#include "Common/Resources.hlsli"
 #include "Common/StaticSampler.hlsli"
+
 
 struct vs_input_t
 {
@@ -13,42 +17,26 @@ struct v2p_t
 	float4 clipPosition : SV_POSITION;
     float3 sampleDir : POSITION; // for cubemap sampling
 };
+ConstantBuffer<SkyboxRenderResources> renderResources : register(b0);
 
-//------------------------------------------------------------------------------------------------
-cbuffer CameraConstants : register(b2)
-{
-	float4x4 	c_worldToCameraTransform;	// View transform
-	float4x4 	c_cameraToRenderTransform;	// Non-standard transform from game to DirectX conventions
-	float4x4 	c_renderToClipTransform;		// Projection transform
-	float3	 	c_cameraWorldPosition;       // Camera World Position
-	float		padding_20;
-};
-
-//------------------------------------------------------------------------------------------------
-cbuffer ModelConstants : register(b3)
-{
-	float4x4 	c_modelToWorldTransform;		// Model transform
-	float4 		c_modelColor;
-};
-
-
-
-TextureCube t_cubeMap : register(t9);
 //------------------------------------------------------------------------------------------------
 v2p_t VertexMain(vs_input_t input)
 {
+    ConstantBuffer<CameraConstants> cameraConstants = ResourceDescriptorHeap[renderResources.cameraConstantsIndex];
+    ConstantBuffer<ModelConstants> modelConstants = ResourceDescriptorHeap[renderResources.modelConstantsIndex];
+
 	v2p_t v2p;
 
 	float4 modelPosition = float4(input.modelPosition, 1);
-    v2p.sampleDir = mul(c_cameraToRenderTransform, float4(input.modelPosition, 0.f)).xyz;
+    v2p.sampleDir = mul(cameraConstants.cameraToRenderTransform, float4(input.modelPosition, 0.f)).xyz;
 
 	// Should be identity M2W transform
-    float4 worldPosition = mul(c_modelToWorldTransform, modelPosition);
-    worldPosition.xyz += c_cameraWorldPosition; // follow camera
+    float4 worldPosition = mul(modelConstants.modelToWorldTransform, modelPosition);
+    worldPosition.xyz += cameraConstants.cameraWorldPosition; // follow camera
 
-	float4 cameraPosition = mul(c_worldToCameraTransform, worldPosition);
-	float4 renderPosition = mul(c_cameraToRenderTransform, cameraPosition);
-	float4 clipPosition = mul(c_renderToClipTransform, renderPosition);
+	float4 cameraPosition = mul(cameraConstants.worldToCameraTransform, worldPosition);
+	float4 renderPosition = mul(cameraConstants.cameraToRenderTransform, cameraPosition);
+	float4 clipPosition = mul(cameraConstants.renderToClipTransform, renderPosition);
 
 	v2p.clipPosition = clipPosition.xyww;
 	return v2p;
@@ -57,5 +45,6 @@ v2p_t VertexMain(vs_input_t input)
 //------------------------------------------------------------------------------------------------
 float4 PixelMain(v2p_t input) : SV_Target
 {
-    return t_cubeMap.Sample(s_pointWrap, input.sampleDir);
+	TextureCube cubeMapTexture = ResourceDescriptorHeap[renderResources.cubeMapTextureIndex];
+    return cubeMapTexture.Sample(s_linearWrap, input.sampleDir);
 }
