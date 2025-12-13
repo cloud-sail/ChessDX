@@ -263,11 +263,11 @@ bool ChessPieceDefinition::TryLoadStaticMesh(std::string const& filePath, Player
 	std::string m_diffuseMapFilePath = ParseXmlAttribute(*rootElement, "diffuseMap", "DefaultDiffuse");
 	if (m_diffuseMapFilePath.empty()) m_diffuseMapFilePath = "DefaultDiffuse";
 
-	std::string m_normalMapFilePath = ParseXmlAttribute(*rootElement, "normalMap", "DefaultNormal");
-	if (m_normalMapFilePath.empty()) m_normalMapFilePath = "DefaultNormal";
+	std::string m_normalMapFilePath = ParseXmlAttribute(*rootElement, "normalMap", "DefaultNormalMap");
+	if (m_normalMapFilePath.empty()) m_normalMapFilePath = "DefaultNormalMap";
 
-	std::string m_specGlossEmitMapFilePath = ParseXmlAttribute(*rootElement, "specGlossEmitMap", "DefaultSpecGlossEmit");
-	if (m_specGlossEmitMapFilePath.empty()) m_specGlossEmitMapFilePath = "DefaultSpecGlossEmit";
+	std::string m_specGlossEmitMapFilePath = ParseXmlAttribute(*rootElement, "specGlossEmitMap", "DefaultSpecGlossEmitMap");
+	if (m_specGlossEmitMapFilePath.empty()) m_specGlossEmitMapFilePath = "DefaultSpecGlossEmitMap";
 
 
 
