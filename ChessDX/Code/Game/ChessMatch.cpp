@@ -1227,7 +1227,8 @@ bool ChessMatch::Command_ChessMove(EventArgs& args)
 	{
 		std::string remoteCmd = "Remotecmd cmd=ChessMove";
 
-		for (const auto& kv : args.m_keyValuePairs)
+		auto kvPairs = args.GetAllStringKeyValuePairs();
+		for (const auto& kv : kvPairs)
 		{
 			remoteCmd += " " + kv.first + "=" + kv.second;
 		}
@@ -1272,7 +1273,8 @@ bool ChessMatch::Command_RemoteCmd(EventArgs& args)
 	}
 	std::string commandString = cmd;
 
-	for (const auto& kv : args.m_keyValuePairs) 
+	auto kvPairs = args.GetAllStringKeyValuePairs();
+	for (const auto& kv : kvPairs)
 	{
 		if (kv.first != "cmd")
 		{
